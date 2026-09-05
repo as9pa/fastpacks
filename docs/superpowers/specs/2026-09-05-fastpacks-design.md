@@ -1,9 +1,9 @@
 # FastPacks design spec (v1)
 
 **Date:** 2026-09-05
-**Status:** approved by owner in chat; awaiting owner review of this written spec
+**Status:** approved by owner 2026-09-05 (chat + written spec)
 **Target:** Minecraft 1.8.9, Forge 11.15.1.2318, client side only
-**Name:** display name and mod id are both lowercase `fastpacks` for now (owner will pick a final name later). The owner will pick the final name later; renaming touches the mod id, base package, and two resource file names only.
+**Name:** display name and mod id are both lowercase `fastpacks` for now. The owner will pick the final name later; renaming touches the mod id, base package, and two resource file names only.
 
 ## 1. Problem
 
