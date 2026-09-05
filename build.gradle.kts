@@ -103,10 +103,34 @@ tasks.processResources {
 // The dev client must run on the Java 8 toolchain, not on the JVM running Gradle.
 // Forward the two fastpacks.* dev switches from -P project properties to the client JVM.
 // Loom registers runClient in afterEvaluate, so configure it lazily rather than with tasks.named.
-tasks.withType<JavaExec>().matching { it.name == "runClient" }.configureEach {
+val devClientTasks = setOf("runClient", "runDevClient")
+tasks.withType<JavaExec>().matching { it.name in devClientTasks }.configureEach {
     javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
     listOf("fastpacks.baseline", "fastpacks.devOpenPacksGui").forEach { key ->
         (project.findProperty(key) as String?)?.let { systemProperty(key, it) }
+    }
+}
+
+// Loom 0.10 targets Gradle 7: its AbstractRunTask overrides JavaExec.getMain(), which Gradle 8
+// removed. Gradle 8.8 therefore fails runClient before it starts ("property 'main' is missing an
+// input or output annotation") and would leave mainClass unset even if it did not. runDevClient
+// performs the same launch from a plain JavaExec, taking every value from Loom's own run config.
+tasks.register<JavaExec>("runDevClient") {
+    group = "loom"
+    description = "Starts the 1.8.9 dev client (Gradle 8 stand-in for Loom's runClient)."
+    dependsOn("downloadAssets")
+    workingDir = file("run")
+    doFirst {
+        workingDir.mkdirs()
+    }
+}
+
+afterEvaluate {
+    val loomRunClient = tasks.getByName("runClient") as net.fabricmc.loom.task.AbstractRunTask
+    tasks.named<JavaExec>("runDevClient") {
+        mainClass.set(loomRunClient.main)
+        classpath = loomRunClient.classpath
+        jvmArgs = loomRunClient.jvmArgs
     }
 }
 
