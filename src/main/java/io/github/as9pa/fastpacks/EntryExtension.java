@@ -1,4 +1,4 @@
-package io.github.as9pa.fastpacks.mixin;
+package io.github.as9pa.fastpacks;
 
 import io.github.as9pa.fastpacks.icon.IconSink;
 

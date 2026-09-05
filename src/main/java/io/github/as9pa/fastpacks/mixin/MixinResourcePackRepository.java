@@ -1,5 +1,6 @@
 package io.github.as9pa.fastpacks.mixin;
 
+import io.github.as9pa.fastpacks.EntryExtension;
 import io.github.as9pa.fastpacks.Log;
 import java.util.List;
 import net.minecraft.client.resources.ResourcePackRepository;

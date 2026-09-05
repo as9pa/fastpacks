@@ -1,5 +1,6 @@
 package io.github.as9pa.fastpacks.mixin;
 
+import io.github.as9pa.fastpacks.EntryExtension;
 import io.github.as9pa.fastpacks.PackKey;
 import io.github.as9pa.fastpacks.icon.IconLoader;
 import java.awt.image.BufferedImage;
