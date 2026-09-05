@@ -3,7 +3,7 @@
 **Date:** 2026-09-05
 **Status:** approved by owner in chat; awaiting owner review of this written spec
 **Target:** Minecraft 1.8.9, Forge 11.15.1.2318, client side only
-**Name:** "FastPacks" / mod id `fastpacks` is a placeholder. The owner will pick the final name later; renaming touches the mod id, base package, and two resource file names only.
+**Name:** display name and mod id are both lowercase `fastpacks` for now (owner will pick a final name later). The owner will pick the final name later; renaming touches the mod id, base package, and two resource file names only.
 
 ## 1. Problem
 
@@ -85,7 +85,7 @@ Non-goals (v1):
 
 ## 4. Architecture
 
-Mod id `fastpacks`, display name FastPacks, base package `io.github.as9pa.fastpacks`.
+Mod id `fastpacks`, display name `fastpacks`, base package `io.github.as9pa.fastpacks`.
 One jar, no dependencies beyond Forge and the bundled Mixin runtime.
 
 ```
@@ -255,7 +255,7 @@ Jar manifest: `TweakClass: org.spongepowered.asm.launch.MixinTweaker`,
 `MixinConfigs: mixins.fastpacks.json`, `ForceLoadAsMod: true`,
 `FMLCorePluginContainsFMLMod: true`.
 
-`mcmod.info`: modid `fastpacks`, name FastPacks, version from Gradle, mcversion
+`mcmod.info`: modid `fastpacks`, name `fastpacks`, version from Gradle, mcversion
 1.8.9, author as9pa.
 
 ## 6. Build and toolchain
