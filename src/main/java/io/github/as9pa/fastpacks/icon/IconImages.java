@@ -16,6 +16,9 @@ public final class IconImages {
 
     /** Decodes an image from the stream and closes it. Returns null when the data is not a readable image. */
     public static BufferedImage decode(InputStream in) {
+        if (in == null) {
+            return null;
+        }
         try {
             return ImageIO.read(in);
         } catch (IOException | RuntimeException e) {

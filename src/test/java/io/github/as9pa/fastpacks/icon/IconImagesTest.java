@@ -44,6 +44,11 @@ public class IconImagesTest {
     }
 
     @Test
+    public void decodeReturnsNullForNullStream() {
+        assertNull(IconImages.decode(null));
+    }
+
+    @Test
     public void downscaleKeepsSmallImageInstance() {
         BufferedImage img = new BufferedImage(64, 64, BufferedImage.TYPE_INT_RGB);
         assertSame(img, IconImages.downscale(img, 128));
