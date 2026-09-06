@@ -3,7 +3,6 @@ package io.github.as9pa.fastpacks.dev;
 import io.github.as9pa.fastpacks.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiScreenResourcePacks;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -17,6 +16,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 public class DevHarness {
     private static final int FRAMES = 120;
 
+    private boolean menuSeen;
     private boolean opened;
     private long frameStartNanos;
     private long totalNanos;
@@ -25,22 +25,25 @@ public class DevHarness {
 
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
-        if (opened || !(event.gui instanceof GuiMainMenu)) {
-            return;
+        if (event.gui instanceof GuiMainMenu) {
+            menuSeen = true;
         }
-        opened = true;
-        final GuiScreen menu = event.gui;
-        final Minecraft mc = Minecraft.getMinecraft();
-        // Let the main menu finish showing, then replace it on the next tick.
-        mc.addScheduledTask(() -> {
-            Log.LOG.info("fastpacks dev: opening GuiScreenResourcePacks");
-            mc.displayGuiScreen(new GuiScreenResourcePacks(menu));
-        });
     }
 
     @SubscribeEvent
     public void onRenderTick(TickEvent.RenderTickEvent event) {
         Minecraft mc = Minecraft.getMinecraft();
+        if (menuSeen && !opened) {
+            // Deliberately not done from GuiOpenEvent: on the client thread addScheduledTask runs the
+            // task inline, so displayGuiScreen from inside that event is immediately overwritten by
+            // the displayGuiScreen call that fired it and the main menu wins.
+            if (event.phase == TickEvent.Phase.END && mc.currentScreen instanceof GuiMainMenu) {
+                opened = true;
+                Log.LOG.info("fastpacks dev: opening GuiScreenResourcePacks");
+                mc.displayGuiScreen(new GuiScreenResourcePacks(mc.currentScreen));
+            }
+            return;
+        }
         if (reported || !(mc.currentScreen instanceof GuiScreenResourcePacks)) {
             return;
         }
