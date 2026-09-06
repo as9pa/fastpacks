@@ -6,8 +6,9 @@ Forge 1.8.9 client mod. Makes the Resource Packs screen open instantly when you 
 
 Every time the screen opens, vanilla re-matches each pack on disk against its cached list using a
 comparison that performs two filesystem calls per compare, inside three O(N^2) list scans. With
-175 packs that is about 340,000 filesystem calls per open, roughly 7.6 seconds on the owner's
-Windows PC with 175 loadable packs. Pack size has nothing to do with it.
+248 files on disk and 175 loaded packs that is roughly 75,000 pack comparisons, each costing four
+filesystem calls, on the order of 300,000 filesystem calls per open, roughly 7.6 seconds on the
+owner's Windows PC. Pack size has nothing to do with it.
 
 ## What fastpacks does
 
@@ -19,7 +20,9 @@ Windows PC with 175 loadable packs. Pack size has nothing to do with it.
 ## Measured (owner's PC, 175 loadable packs, 6.4 GiB)
 
 The pack folder has 248 files on disk (247 zips + 1 folder, 6.4 GiB); vanilla loads 175 of them
-because 72 zips have `pack.mcmeta` nested inside a top-level folder, which the game ignores.
+because 72 zips have `pack.mcmeta` nested inside a top-level folder, which the game ignores
+(vanilla still opens each of them on every scan, fails to find `pack.mcmeta`, and drops it via an
+exception).
 
 | Metric | Vanilla | fastpacks | Ratio |
 |---|---|---|---|
@@ -30,9 +33,10 @@ because 72 zips have `pack.mcmeta` nested inside a top-level folder, which the g
 Avg frame is render time between Forge's render-tick start and end events; it excludes the
 frame-rate-cap wait, so it is not an FPS figure.
 
-The optimised startup scan came in at 275 ms against a 200 ms design target. It is the one scan
-that cannot hit a warm cache: it is the first time the process touches the folder, and 72 of the
-248 files are broken zips that throw on every scan, on top of running before the JIT has warmed up.
+The optimised startup scan came in at 275 ms against a 200 ms design target (263 ms on a repeat
+run). The remaining time is vanilla work this mod does not touch: reading 248 directory entries
+and opening every zip for its `pack.mcmeta`, of which 72 fail with an exception, all before the
+JIT has warmed up.
 
 Details in `docs/measurements-2026-09-05.md`.
 
