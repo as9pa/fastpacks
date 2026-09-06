@@ -38,6 +38,19 @@ run). The remaining time is vanilla work this mod does not touch: reading 248 di
 and opening every zip for its `pack.mcmeta`, of which 72 fail with an exception, all before the
 JIT has warmed up.
 
+### In the owner's actual game (OptiFine HD U M5 loaded, 246 packs)
+
+After the nested zips were repaired the game loads 246 packs. Measured from `latest.log` in the
+normal launcher profile with OptiFine, Meowtils, Clear Chat and Keystrokes installed; the vanilla
+row used `-Dfastpacks.baseline=true`, which keeps the timing line but disables the optimisations.
+
+| Metric | Vanilla | fastpacks | Ratio |
+|---|---|---|---|
+| Startup scan | 1466 ms | 413 ms | 3.5x |
+| Screen open scan | 21212 ms | 137 ms | 155x |
+
+A 21-second freeze becomes 0.14 s: 99.4% less time.
+
 Details in `docs/measurements-2026-09-05.md`.
 
 ## Known limitation

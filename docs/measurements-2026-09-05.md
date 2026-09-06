@@ -68,3 +68,28 @@ cache — it is the first time the process touches the folder, so it pays for 24
 plus a `pack.mcmeta` read on each of the 175 loadable packs. A repeat run measured 263 ms, so the
 number is stable rather than noise. The screen-open scan, the figure the freeze is actually made of,
 is 81x faster and inside its budget.
+
+## 2026-09-06: owner's real game, OptiFine loaded, 246 packs
+
+Normal launcher profile (Forge 1.8.9-11.15.1.2318, OptiFine HD U M5, Meowtils, Clear Chat,
+Keystrokes, JDK 8, -Xmx8G). The 72 nested-folder zips had been repaired, so vanilla now loads
+246 packs. Baseline run added `-Dfastpacks.baseline=true` to the JVM arguments; the fastpacks
+run is the owner's first normal session with the jar installed.
+
+| Metric | Baseline (`-Dfastpacks.baseline=true`) | fastpacks | Ratio |
+|---|---|---|---|
+| Startup scan | 1466 ms | 413 ms | 3.5x |
+| Screen open scan | 21212 ms | 137 ms | 155x |
+
+Log excerpts:
+
+- baseline: `[16:06:25] [main/WARN]: fastpacks: BASELINE mode - optimisations disabled, timing only`,
+  `[16:06:29] [Client thread/INFO]: fastpacks: rescanned 246 packs in 1466 ms`,
+  `[16:08:12] [Client thread/INFO]: fastpacks: rescanned 246 packs in 21212 ms`
+- fastpacks: `[03:03:35] [Client thread/INFO]: fastpacks: rescanned 246 packs in 413 ms`,
+  `[03:04:12] [Client thread/INFO]: fastpacks: rescanned 246 packs in 137 ms`,
+  `[03:04:16] [Client thread/INFO]: fastpacks: rescanned 246 packs in 139 ms`
+
+The real-game baseline is far above the dev-client figure (7644 ms at 175 packs) for two reasons:
+the scan cost grows with the square of the pack count (246 vs 175), and the extra mods add their
+own per-call overhead on this machine.
