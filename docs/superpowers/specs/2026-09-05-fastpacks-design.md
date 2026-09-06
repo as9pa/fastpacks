@@ -3,7 +3,7 @@
 **Date:** 2026-09-05
 **Status:** approved by owner 2026-09-05 (chat + written spec)
 **Target:** Minecraft 1.8.9, Forge 11.15.1.2318, client side only
-**Name:** display name and mod id are both lowercase `fastpacks` for now. The owner will pick the final name later; renaming touches the mod id, base package, and two resource file names only.
+**Name:** `fastpacks` (final, confirmed by owner 2026-09-06). Display name and mod id are both lowercase.
 
 ## 1. Problem
 
