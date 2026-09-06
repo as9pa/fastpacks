@@ -48,6 +48,7 @@ not by this mod either. Re-zip them so `pack.mcmeta` is at the root.
 ## Install
 
 Drop `fastpacks-0.1.0.jar` into `.minecraft/mods` next to Forge 1.8.9. Compatible with OptiFine 1.8.9 HD U M5 as a mod jar and with other Mixin 0.7.11 mods. Uses `@Inject`/`@Redirect` only, no `@Overwrite`.
+The mixin config is marked required, so if a future OptiFine or Forge build changes one of the three patched methods the game will fail at launch with a clear Mixin error naming fastpacks rather than silently running slow; remove the jar to launch again.
 
 ## Build
 

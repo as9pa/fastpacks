@@ -114,7 +114,9 @@ tasks.withType<JavaExec>().matching { it.name in devClientTasks }.configureEach 
 // Loom 0.10 targets Gradle 7: its AbstractRunTask overrides JavaExec.getMain(), which Gradle 8
 // removed. Gradle 8.8 therefore fails runClient before it starts ("property 'main' is missing an
 // input or output annotation") and would leave mainClass unset even if it did not. runDevClient
-// performs the same launch from a plain JavaExec, taking every value from Loom's own run config.
+// performs the same launch from a plain JavaExec, copying mainClass, classpath and jvmArgs from
+// Loom's runClient configuration below. workingDir is hardcoded to run/ rather than copied. args
+// and environment are not copied either; both are empty in Loom's config at the time of writing.
 tasks.register<JavaExec>("runDevClient") {
     group = "loom"
     description = "Starts the 1.8.9 dev client (Gradle 8 stand-in for Loom's runClient)."
