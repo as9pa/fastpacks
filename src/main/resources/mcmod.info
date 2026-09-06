@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "${modid}",
+    "name": "fastpacks",
+    "description": "Makes the Resource Packs screen open instantly with hundreds of packs. Background icon loading, off-screen row culling.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["as9pa"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

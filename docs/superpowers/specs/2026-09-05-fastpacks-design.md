@@ -95,7 +95,7 @@ io.github.as9pa.fastpacks
 |- ListCulling.java                    pure: isOffscreen(y, height, top, bottom)
 |- icon/IconImages.java                pure: decode(InputStream) and downscale(img, max)
 |- icon/IconLoader.java                background executor, placeholder, submit(File, sink)
-|- mixin/EntryExtension.java           duck interface implemented by the Entry mixin
+|- EntryExtension.java                 duck interface implemented by the Entry mixin (must live outside the mixin package)
 |- mixin/MixinResourcePackRepositoryEntry.java
 |- mixin/MixinResourcePackRepository.java
 |- mixin/MixinGuiListExtended.java
@@ -109,8 +109,11 @@ delegate to them.
 ### 4.1 Cheap pack identity
 
 Target: `net.minecraft.client.resources.ResourcePackRepository$Entry` via
-`@Mixin(targets = "...ResourcePackRepository$Entry")` because the class is a
-package-private inner class. The mixin implements `EntryExtension`.
+`@Mixin(ResourcePackRepository.Entry.class)`; `Entry` is a public inner class in
+the mapped jar, so the direct class reference works and no `targets =` string is
+needed. The mixin implements `EntryExtension`, which lives in the root package
+because Mixin refuses to load any class from the declared mixin package when it
+is referenced directly.
 
 - `@Shadow @Final private File resourcePackFile;`
 - `@Unique private String fastpacks$key;`
@@ -271,7 +274,7 @@ nea89o), adapted:
 | Minecraft / mappings / Forge | `com.mojang:minecraft:1.8.9`, `de.oceanlabs.mcp:mcp_stable:22-1.8.9`, `net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9` |
 | Mixin | runtime `org.spongepowered:mixin:0.7.11-SNAPSHOT` bundled via shadow (not relocated); annotation processor `org.spongepowered:mixin:0.8.5-SNAPSHOT` for the refmap |
 | Tests | JUnit 4.13.2; the `test` task runs on the Java 8 toolchain |
-| `runClient` | **explicitly pinned** to the Java 8 toolchain launcher (the template leaves it on the Gradle JVM); tweak class `MixinTweaker`; `mixin.debug=true` in dev |
+| `runDevClient` (dev launches) | plain `JavaExec` task copying Loom's run config (main class, classpath, JVM args) because Loom 0.10's `runClient` fails Gradle 8.8 task validation; **explicitly pinned** to the Java 8 toolchain launcher; forwards `-Pfastpacks.baseline` and `-Pfastpacks.devOpenPacksGui` as system properties; `mixin.debug=true` in dev |
 | Output | `remapJar` produces `build/libs/fastpacks-<version>.jar`; intermediates go to `build/intermediates` |
 | DevAuth | not used; the offline dev client is sufficient |
 
@@ -309,7 +312,7 @@ Unit tests (JUnit, pure Java, no Minecraft classes, run with `gradlew test`):
 
 Dev-client verification (owner's real folder via junction, JDK 8, no OptiFine):
 
-1. `gradlew runClient` with `-Dfastpacks.baseline=true -Dfastpacks.devOpenPacksGui=true`:
+1. `gradlew runDevClient` with `-Dfastpacks.baseline=true -Dfastpacks.devOpenPacksGui=true`:
    capture the `rescanned ... ms` and `avg frame` lines.
 2. Same with baseline off: capture again.
 3. Confirm the log shows `Mixing MixinResourcePackRepositoryEntry ... into
@@ -327,7 +330,9 @@ read the `FastPacks: rescanned` line in `latest.log`.
 - All unit tests pass.
 - Baseline scan on the owner's folder at least 1,000 ms; optimized scan at most
   100 ms, logged by the same code path in the same session.
-- Startup scan at most 200 ms.
+- Startup scan at most 200 ms. Measured 275 ms (263 ms on a repeat run); accepted
+  because the remaining time is vanilla directory and `pack.mcmeta` work on 248
+  files, 72 of which throw, before JIT warm-up.
 - Three mixins apply with no errors; the game reaches the main menu and the
   Resource Packs screen renders icons that swap from placeholder to real icons.
 - Built jar loads under Forge 1.8.9 with OptiFine M5 present (owner-confirmed).

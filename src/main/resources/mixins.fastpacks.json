@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.7",
+  "package": "io.github.as9pa.fastpacks.mixin",
+  "plugin": "io.github.as9pa.fastpacks.mixin.FastPacksMixinPlugin",
+  "refmap": "mixins.fastpacks.refmap.json",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "MixinResourcePackRepositoryEntry",
+    "MixinResourcePackRepository",
+    "MixinGuiListExtended"
+  ],
+  "injectors": { "defaultRequire": 1 }
+}
