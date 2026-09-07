@@ -66,7 +66,8 @@ public class DevHarness {
                     packs, String.format("%.2f", totalNanos / 1_000_000.0 / frames), frames);
             int r16 = 0, r32 = 0, r64 = 0, r128 = 0, overlay = 0, unknown = 0, pending = 0;
             for (ResourcePackRepository.Entry entry : mc.getResourcePackRepository().getRepositoryEntriesAll()) {
-                PackResolution r = ((EntryExtension) entry).fastpacks$resolution();
+                // In baseline mode the Entry mixin is off, so no entry implements EntryExtension: count them pending.
+                PackResolution r = entry instanceof EntryExtension ? ((EntryExtension) entry).fastpacks$resolution() : null;
                 if (r == null) { pending++; }
                 else if (r.kind == PackResolution.Kind.OVERLAY) { overlay++; }
                 else if (r.kind == PackResolution.Kind.UNKNOWN) { unknown++; }

@@ -10,7 +10,8 @@
     "MixinResourcePackRepository",
     "MixinGuiListExtended",
     "MixinGuiResourcePackList",
-    "MixinGuiScreenResourcePacks"
+    "MixinGuiScreenResourcePacks",
+    "MixinResourcePackListEntry"
   ],
   "injectors": { "defaultRequire": 1 }
 }
