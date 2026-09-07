@@ -107,6 +107,7 @@ public final class PackCache {
         }
         loaded = true;
         if (!file.isFile()) {
+            Log.LOG.info("fastpacks: no cache at {}, starting empty", file);
             return;
         }
         try (Reader r = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
@@ -120,28 +121,32 @@ public final class PackCache {
             if (packs == null) {
                 return;
             }
+            int skipped = 0;
             for (Map.Entry<String, JsonElement> e : packs.entrySet()) {
-                JsonObject o = e.getValue().getAsJsonObject();
-                PackResolution.Kind kind;
+                // One malformed entry must cost only itself, not the rest of the file.
                 try {
-                    kind = PackResolution.Kind.valueOf(o.get("kind").getAsString());
-                } catch (IllegalArgumentException | NullPointerException bad) {
-                    continue;
+                    entries.put(e.getKey(), read(e.getValue()));
+                } catch (RuntimeException bad) {
+                    skipped++;
                 }
-                PackResolution value;
-                if (kind == PackResolution.Kind.TEXTURES) {
-                    value = PackResolution.textures(o.get("res").getAsInt());
-                } else if (kind == PackResolution.Kind.OVERLAY) {
-                    value = PackResolution.OVERLAY;
-                } else {
-                    value = PackResolution.UNKNOWN;
-                }
-                entries.put(e.getKey(), value);
+            }
+            if (skipped > 0) {
+                Log.LOG.info("fastpacks: skipped {} malformed entries in {}", skipped, file);
             }
             Log.LOG.info("fastpacks: loaded {} cached pack resolutions", entries.size());
         } catch (IOException | RuntimeException e) {
             entries.clear();
             Log.LOG.info("fastpacks: ignoring unreadable {}: {}", file, e.toString());
         }
+    }
+
+    /** Throws a RuntimeException when the entry is not a resolution the caller can use. */
+    private static PackResolution read(JsonElement element) {
+        JsonObject o = element.getAsJsonObject();
+        PackResolution.Kind kind = PackResolution.Kind.valueOf(o.get("kind").getAsString());
+        if (kind == PackResolution.Kind.TEXTURES) {
+            return PackResolution.textures(o.get("res").getAsInt());
+        }
+        return kind == PackResolution.Kind.OVERLAY ? PackResolution.OVERLAY : PackResolution.UNKNOWN;
     }
 }
