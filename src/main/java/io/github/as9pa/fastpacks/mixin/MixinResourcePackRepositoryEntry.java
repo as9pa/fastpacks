@@ -2,9 +2,12 @@ package io.github.as9pa.fastpacks.mixin;
 
 import io.github.as9pa.fastpacks.EntryExtension;
 import io.github.as9pa.fastpacks.PackKey;
+import io.github.as9pa.fastpacks.filter.PackResolution;
+import io.github.as9pa.fastpacks.filter.PackScan;
 import io.github.as9pa.fastpacks.icon.IconLoader;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.DefaultResourcePack;
 import net.minecraft.client.resources.IResourcePack;
@@ -32,6 +35,7 @@ public abstract class MixinResourcePackRepositoryEntry implements EntryExtension
 
     @Unique private String fastpacks$key;
     @Unique private volatile BufferedImage fastpacks$pendingIcon;
+    @Unique private volatile PackResolution fastpacks$resolution;
 
     @Shadow private BufferedImage texturePackIcon;
     @Shadow private ResourceLocation locationTexturePackIcon;
@@ -48,6 +52,9 @@ public abstract class MixinResourcePackRepositoryEntry implements EntryExtension
     private BufferedImage fastpacks$deferIcon(IResourcePack pack) {
         if (!(pack instanceof DefaultResourcePack)) {
             IconLoader.submit(resourcePackFile, this);
+            // mcDataDir is set in Minecraft's constructor, so it is valid even during startGame.
+            PackScan.configure(new File(Minecraft.getMinecraft().mcDataDir, "config" + File.separator + "fastpacks"));
+            PackScan.submit(resourcePackFile, this);
         }
         return IconLoader.placeholder();
     }
@@ -80,6 +87,16 @@ public abstract class MixinResourcePackRepositoryEntry implements EntryExtension
     @Override
     public void acceptIcon(BufferedImage image) {
         fastpacks$pendingIcon = image;
+    }
+
+    @Override
+    public void acceptResolution(PackResolution resolution) {
+        fastpacks$resolution = resolution;
+    }
+
+    @Override
+    public PackResolution fastpacks$resolution() {
+        return fastpacks$resolution;
     }
 
     @Inject(method = "toString", at = @At("HEAD"), cancellable = true)
