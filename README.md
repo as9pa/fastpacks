@@ -16,6 +16,8 @@ owner's Windows PC. Pack size has nothing to do with it.
 - Decodes pack icons on background threads, showing the default icon until each real one arrives. Icons larger than 128 px are downscaled before upload.
 - Skips drawing rows that are scrolled out of view in the two pack lists (OptiFine already does this; the mod works with or without OptiFine).
 - Logs `fastpacks: rescanned N packs in M ms` so you can see it working in `latest.log`.
+- Adds a toolbar above the lists: a search box, resolution chips (All / 16x / 32x / 64x / 128x+ / Overlay) and a match counter. Only the Available list is filtered; selected packs never disappear.
+- Shows each pack's resolution at the right end of its row. Resolution is read from the PNG headers of a dozen PvP textures (swords, bow, stone, planks...) on the background threads, once per pack, and cached in `config/fastpacks/packs.json`. "Overlay" means the pack has none of those textures. Delete the cache file to rescan.
 
 ## Measured (owner's PC, 175 loadable packs, 6.4 GiB)
 
@@ -60,8 +62,8 @@ not by this mod either. Re-zip them so `pack.mcmeta` is at the root.
 
 ## Install
 
-Drop `fastpacks-0.1.0.jar` into `.minecraft/mods` next to Forge 1.8.9. Compatible with OptiFine 1.8.9 HD U M5 as a mod jar and with other Mixin 0.7.11 mods. Uses `@Inject`/`@Redirect` only, no `@Overwrite`.
-The mixin config is marked required, so if a future OptiFine or Forge build changes one of the three patched methods the game will fail at launch with a clear Mixin error naming fastpacks rather than silently running slow; remove the jar to launch again.
+Drop `fastpacks-0.2.0.jar` into `.minecraft/mods` next to Forge 1.8.9. Compatible with OptiFine 1.8.9 HD U M5 as a mod jar and with other Mixin 0.7.11 mods. Uses `@Inject`/`@Redirect`/`@ModifyConstant` only, no `@Overwrite`.
+The mixin config is marked required, so if a future OptiFine or Forge build changes one of the patched vanilla methods the game will fail at launch with a clear Mixin error naming fastpacks rather than silently running slow; remove the jar to launch again.
 
 ## Build
 
@@ -70,11 +72,11 @@ Needs JDK 21 (to run Gradle) and JDK 8 (toolchain, auto-detected). On Windows:
     set JAVA_HOME=C:\Program Files\Java\jdk-21.0.12.1
     gradlew build
 
-Output: `build/libs/fastpacks-0.1.0.jar`. Tests: `gradlew test`.
+Output: `build/libs/fastpacks-0.2.0.jar`. Tests: `gradlew test`.
 
 Dev switches for `gradlew runDevClient`: `-Pfastpacks.baseline=true` (optimisations off, timing on),
 `-Pfastpacks.devOpenPacksGui=true` (auto-open the screen, log frame time, exit).
 
 ## Roadmap
 
-v2: resolution filters (16x/32x/64x), search box, persistent per-pack cache.
+Done in 0.2.0: resolution filters, search, per-pack cache. Ideas: sorting, folders, a settings screen.

@@ -1,6 +1,6 @@
 # fastpacks v2: resolution filter, search, per-pack cache
 
-Status: approved by the owner on 2026-09-06 (layout as drawn, row badge included).
+Status: implemented in 0.2.0 (branch fastpacks-v2). Deviations: resolution results are published through a volatile field rather than a client-thread handoff; the cache loads on the background thread; the name trim is 110 px, not 118; PackCache.ensureLoaded skips malformed entries one by one and logs a missing cache file at INFO (hardened after review).
 Wireframe: https://claude.ai/code/artifact/e051ce8b-3211-4bcb-953b-a5ad29d5357e
 Builds on v1 (`2026-09-05-fastpacks-design.md`). Version bumps to 0.2.0.
 
