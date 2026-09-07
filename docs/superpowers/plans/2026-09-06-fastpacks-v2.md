@@ -1046,18 +1046,6 @@ public class PackFilterTest {
 }
 ```
 
-Note: in `formattingCodesAreStripped` the third assertion is deliberately trivial; replace it with this clearer one when implementing:
-
-```java
-        assertEquals("ab", PackFilter.stripFormatting("a\u00a7" + "b"));   // a lone trailing code char is dropped with its section sign
-```
-Actually `"a\u00a7b"` strips `§b` leaving `"a"`. Use exactly:
-
-```java
-        assertEquals("a", PackFilter.stripFormatting("a\u00a7b"));
-        assertEquals("a", PackFilter.stripFormatting("a\u00a7"));
-```
-
 - [ ] **Step 2: Run the tests to verify they fail**
 
 Expected: compilation FAILS, cannot find symbol `PackFilter`.
