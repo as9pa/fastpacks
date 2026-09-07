@@ -1,9 +1,12 @@
 package io.github.as9pa.fastpacks.dev;
 
+import io.github.as9pa.fastpacks.EntryExtension;
 import io.github.as9pa.fastpacks.Log;
+import io.github.as9pa.fastpacks.filter.PackResolution;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreenResourcePacks;
+import net.minecraft.client.resources.ResourcePackRepository;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -61,6 +64,17 @@ public class DevHarness {
             int packs = mc.getResourcePackRepository().getRepositoryEntriesAll().size();
             Log.LOG.info("fastpacks dev: {} packs, avg frame {} ms over {} frames",
                     packs, String.format("%.2f", totalNanos / 1_000_000.0 / frames), frames);
+            int r16 = 0, r32 = 0, r64 = 0, r128 = 0, overlay = 0, unknown = 0, pending = 0;
+            for (ResourcePackRepository.Entry entry : mc.getResourcePackRepository().getRepositoryEntriesAll()) {
+                // In baseline mode the Entry mixin is off, so no entry implements EntryExtension: count them pending.
+                PackResolution r = entry instanceof EntryExtension ? ((EntryExtension) entry).fastpacks$resolution() : null;
+                if (r == null) { pending++; }
+                else if (r.kind == PackResolution.Kind.OVERLAY) { overlay++; }
+                else if (r.kind == PackResolution.Kind.UNKNOWN) { unknown++; }
+                else if (r.res == 16) { r16++; } else if (r.res == 32) { r32++; } else if (r.res == 64) { r64++; } else { r128++; }
+            }
+            Log.LOG.info("fastpacks dev: resolutions 16x={} 32x={} 64x={} 128x+={} overlay={} unknown={} pending={}",
+                    r16, r32, r64, r128, overlay, unknown, pending);
             mc.shutdown();
         }
     }

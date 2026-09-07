@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -56,6 +57,11 @@ public final class IconLoader {
             }
             return placeholder;
         }
+    }
+
+    /** The shared background pool; resolution scans queue here too so pack files are read on the same threads. */
+    public static Executor executor() {
+        return pool();
     }
 
     /** Queues a background load; the sink is invoked only when an icon was decoded. */

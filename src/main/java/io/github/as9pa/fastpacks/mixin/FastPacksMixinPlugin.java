@@ -17,7 +17,10 @@ public class FastPacksMixinPlugin implements IMixinConfigPlugin {
     private static final boolean BASELINE = Boolean.getBoolean("fastpacks.baseline");
     private static final Set<String> OPTIMISATIONS = new HashSet<>(Arrays.asList(
             "io.github.as9pa.fastpacks.mixin.MixinResourcePackRepositoryEntry",
-            "io.github.as9pa.fastpacks.mixin.MixinGuiListExtended"));
+            "io.github.as9pa.fastpacks.mixin.MixinGuiListExtended",
+            "io.github.as9pa.fastpacks.mixin.MixinGuiResourcePackList",
+            "io.github.as9pa.fastpacks.mixin.MixinGuiScreenResourcePacks",
+            "io.github.as9pa.fastpacks.mixin.MixinResourcePackListEntry"));
 
     @Override
     public void onLoad(String mixinPackage) {
