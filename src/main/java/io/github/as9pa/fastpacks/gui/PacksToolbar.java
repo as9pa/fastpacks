@@ -36,6 +36,7 @@ public final class PacksToolbar {
     private final List<ResourcePackListEntry> source;
     private final List<ResourcePackListEntry> visible = new ArrayList<>();
     private final List<ResourcePackListEntry> snapshot = new ArrayList<>();
+    private final List<PackResolution> snapshotResolutions = new ArrayList<>();
     private final List<ChipButton> chips = new ArrayList<>();
     private final GuiTextField search;
     private String query;
@@ -85,10 +86,14 @@ public final class PacksToolbar {
         }
         dirty = false;
         snapshot.clear();
-        snapshot.addAll(source);
+        snapshotResolutions.clear();
         visible.clear();
         PackFilter.Chip chip = PackFilter.activeChip();
         for (ResourcePackListEntry entry : source) {
+            // Record the resolution before matching: a scan landing in between then leaves the snapshot
+            // looking stale, which costs one extra refresh instead of a view that never updates.
+            snapshot.add(entry);
+            snapshotResolutions.add(resolutionOf(entry));
             if (matches(chip, entry)) {
                 visible.add(entry);
             }
@@ -100,7 +105,12 @@ public final class PacksToolbar {
             return false;
         }
         for (int i = 0; i < snapshot.size(); i++) {
-            if (snapshot.get(i) != source.get(i)) {
+            ResourcePackListEntry entry = source.get(i);
+            if (snapshot.get(i) != entry) {
+                return false;
+            }
+            // Entries are reused across scans; a finished scan only swaps the resolution reference.
+            if (snapshotResolutions.get(i) != resolutionOf(entry)) {
                 return false;
             }
         }
@@ -112,9 +122,17 @@ public final class PacksToolbar {
             return chip == PackFilter.Chip.ALL && query.isEmpty();
         }
         ResourcePackRepository.Entry pack = ((ResourcePackListEntryFound) entry).func_148318_i();
+        return PackFilter.matches(chip, query, pack.getResourcePackName(), pack.getTexturePackDescription(), resolutionOf(entry));
+    }
+
+    /** The row's resolution right now, or null while the scan is pending or the row has none. */
+    private static PackResolution resolutionOf(ResourcePackListEntry entry) {
+        if (!(entry instanceof ResourcePackListEntryFound)) {
+            return null;
+        }
+        ResourcePackRepository.Entry pack = ((ResourcePackListEntryFound) entry).func_148318_i();
         // Without the Entry mixin (baseline mode) nothing implements EntryExtension: treat it as still pending.
-        PackResolution resolution = pack instanceof EntryExtension ? ((EntryExtension) pack).fastpacks$resolution() : null;
-        return PackFilter.matches(chip, query, pack.getResourcePackName(), pack.getTexturePackDescription(), resolution);
+        return pack instanceof EntryExtension ? ((EntryExtension) pack).fastpacks$resolution() : null;
     }
 
     /** True (and the filter updated) when the button is one of our chips. */

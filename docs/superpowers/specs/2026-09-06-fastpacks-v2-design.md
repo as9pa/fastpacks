@@ -1,6 +1,6 @@
 # fastpacks v2: resolution filter, search, per-pack cache
 
-Status: implemented in 0.2.0 (branch fastpacks-v2). Deviations: resolution results are published through a volatile field rather than a client-thread handoff; the cache loads on the background thread; the name trim is 110 px, not 118; PackCache.ensureLoaded skips malformed entries one by one and logs a missing cache file at INFO (hardened after review).
+Status: implemented in 0.2.0 (branch fastpacks-v2). Deviations: resolution results are published through a volatile field rather than a client-thread handoff; the cache loads on the background thread; the name trim is 110 px, not 118; PackCache.ensureLoaded skips malformed entries one by one and logs a missing cache file at INFO (hardened after review); icon decode and resolution scan are two separate tasks on the same pool (each opens the pack once on a cache miss, zero extra opens on a warm cache) so the two stay independently testable.
 Wireframe: https://claude.ai/code/artifact/e051ce8b-3211-4bcb-953b-a5ad29d5357e
 Builds on v1 (`2026-09-05-fastpacks-design.md`). Version bumps to 0.2.0.
 
@@ -71,8 +71,10 @@ The Default pack shows `16x`.
 
 ## Resolution detection
 
-Runs inside the same background task that already loads the icon (v1 `IconLoader`), so each
-pack file is opened once. Order: cache lookup first; on a miss, scan and then write through.
+Runs as its own task on the v1 background pool, queued right after the icon load for the same
+pack; on a cache miss the pack is opened a second time for the header reads (a central-directory
+read, milliseconds), on a warm cache not at all. Order: cache lookup first; on a miss, scan and
+then write through.
 
 Sampled textures, all under `assets/minecraft/textures/`:
 
@@ -132,8 +134,8 @@ New, plain classes (never in the mixin package):
 
 Changed:
 
-- `icon/IconLoader` becomes the shared scanner entry point: the task loads the icon and, on a
-  cache miss, the resolution; both results are handed back through the existing sink pattern.
+- `icon/IconLoader` exposes `executor()` so `filter/PackScan` queues on the same pool; the icon
+  task itself is unchanged.
 - `FastPacks`: `version = "0.2.0"` constant in the `@Mod` annotation; `gradle.properties` and
   `mcmod.info` bumped to match.
 
