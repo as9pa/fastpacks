@@ -112,7 +112,8 @@ public final class PacksToolbar {
             return chip == PackFilter.Chip.ALL && query.isEmpty();
         }
         ResourcePackRepository.Entry pack = ((ResourcePackListEntryFound) entry).func_148318_i();
-        PackResolution resolution = ((EntryExtension) pack).fastpacks$resolution();
+        // Without the Entry mixin (baseline mode) nothing implements EntryExtension: treat it as still pending.
+        PackResolution resolution = pack instanceof EntryExtension ? ((EntryExtension) pack).fastpacks$resolution() : null;
         return PackFilter.matches(chip, query, pack.getResourcePackName(), pack.getTexturePackDescription(), resolution);
     }
 

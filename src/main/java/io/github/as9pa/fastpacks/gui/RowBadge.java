@@ -5,6 +5,7 @@ import io.github.as9pa.fastpacks.filter.PackResolution;
 import net.minecraft.client.resources.ResourcePackListEntry;
 import net.minecraft.client.resources.ResourcePackListEntryDefault;
 import net.minecraft.client.resources.ResourcePackListEntryFound;
+import net.minecraft.client.resources.ResourcePackRepository;
 
 /** The grey resolution text at the right end of a pack row. */
 public final class RowBadge {
@@ -21,7 +22,9 @@ public final class RowBadge {
             return "16x";
         }
         if (entry instanceof ResourcePackListEntryFound) {
-            PackResolution r = ((EntryExtension) ((ResourcePackListEntryFound) entry).func_148318_i()).fastpacks$resolution();
+            ResourcePackRepository.Entry pack = ((ResourcePackListEntryFound) entry).func_148318_i();
+            // Without the Entry mixin (baseline mode) nothing implements EntryExtension: show no badge.
+            PackResolution r = pack instanceof EntryExtension ? ((EntryExtension) pack).fastpacks$resolution() : null;
             return r == null ? "" : r.badge();
         }
         return "";
