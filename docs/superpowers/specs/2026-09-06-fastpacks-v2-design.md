@@ -1,6 +1,6 @@
 # fastpacks v2: resolution filter, search, per-pack cache
 
-Status: draft, awaiting owner sign-off on the wireframe details (see Open decisions).
+Status: approved by the owner on 2026-09-06 (layout as drawn, row badge included).
 Wireframe: https://claude.ai/code/artifact/e051ce8b-3211-4bcb-953b-a5ad29d5357e
 Builds on v1 (`2026-09-05-fastpacks-design.md`). Version bumps to 0.2.0.
 
@@ -19,6 +19,7 @@ In:
 - Filtering applies to the Available list only. Selected packs never disappear.
 - Resolution detection by sampling PvP-relevant textures, with an on-disk cache.
 - Active chip remembered while the game runs.
+- Resolution badge at the right end of every row in both lists.
 - Fix the Forge warning about `@Mod` lacking `version`.
 
 Out (unchanged from the v1 roadmap): folders, sorting, a settings GUI, changing how packs load or apply.
@@ -38,6 +39,7 @@ New:
 | Chips (`GuiButton` subclass) | start x = W/2 - 60, y = 28, 2 px gaps | 20 tall, width = label width + 10 |
 | Match counter | right-aligned to x = W/2 + 204, vertically centred in the row | text, colour 0xA0A0A0 |
 | Both lists | top moves from 32 to 52 | header and rows follow the list top as in vanilla |
+| Row badge | right edge at row x + 188, y + 1, in both lists | text, colour 0xA0A0A0: `16x`, `32x`, `64x`, `128x`, `overlay`; nothing for unknown or pending |
 
 The lists lose 20 px of height (about half a row). Header text, row pitch (36), icon (32x32),
 name/description offsets, hover arrows and the scroll bar are vanilla.
@@ -46,6 +48,8 @@ Search box: placeholder "Search packs" in 0x707070 when empty and unfocused; max
 Chips: vanilla button look; the active chip permanently shows the hovered look (blue-grey face,
 text 0xFFFFA0). Exactly one chip is active; All is the default.
 Counter: `<shown> of <total>` where total is the Available list size before filtering.
+Row badge: the pack name is trimmed to 118 px instead of vanilla's 157 so the two never overlap.
+The Default pack shows `16x`.
 
 ## Behaviour
 
@@ -149,12 +153,17 @@ All `@Inject` / `@Redirect` / `@ModifyConstant`, no `@Overwrite`, no lambdas, `d
   - `getSize` and `getListEntry` HEAD cancellable, only when `(Object) this instanceof
     GuiResourcePackAvailable` and a toolbar is attached: answer from the filtered view.
 - `MixinResourcePackRepositoryEntry` (v1): add the resolution field and accessor.
+- `MixinResourcePackListEntry`
+  - `drawEntry` RETURN: draw the badge right-aligned at x + 188, y + 1 from the entry's resolution.
+  - `@ModifyConstant` 157 -> 118 on the name trim in `drawEntry` (the only 157 literal in that method).
 
-Compatibility: OptiFine HD U M5 does not patch `GuiScreenResourcePacks` or `ResourcePackListEntry`
-(verified for v1). `GuiResourcePackList` must be verified the same way (apply OptiFine's xdelta
-patches, diff normalised `javap`) before the plan is written; if OptiFine patches it, the filtered
-view moves to a `@Redirect` on the two `resourcePackEntries` reads in `GuiListExtended` callers
-instead.
+Compatibility (verified 2026-09-06 against OptiFine HD U M5's `patch/*.xdelta` list): none of
+`GuiScreenResourcePacks`, `GuiResourcePackList`, `GuiResourcePackAvailable`, `GuiResourcePackSelected`,
+`ResourcePackListEntry`, `ResourcePackListEntryFound`, `ResourcePackListEntryDefault`, `GuiScreen`,
+`GuiButton` or `GuiTextField` is patched. `GuiSlot` is patched (drawScreen, handleMouseInput,
+drawSelectionBox, getSlotIndexFromScreenCoords, actionPerformed) but v2 never injects into it; it only
+calls the unchanged `setDimensions` / `setSlotXBoundsFromLeft`, and the patched methods still reach
+rows through the virtual `getSize()` / `getListEntry()` that the list mixin answers.
 
 ## Tests (JUnit 4, plain classes only)
 
@@ -179,12 +188,7 @@ the owner in the real game with OptiFine.
 - Scanning all 246 packs from a cold cache on the background pool: under 5 s total, invisible to
   the player; from a warm cache: zero pack opens beyond v1's icon load.
 
-## Open decisions (owner)
+## Decisions taken
 
-1. Row badge: grey resolution text at the right end of each Available and Selected row
-   (wireframe marker 4). Not in the approved plan. If wanted: `ResourcePackListEntry.drawEntry`
-   RETURN draws it, and a `@ModifyConstant` turns the 157 px name trim into 118 px.
-2. Toolbar placement as drawn (y = 28, lists at 52). Alternative if the lost half-row matters:
-   drop the vanilla caption line and keep the lists at 32 with the toolbar below the title only
-   when the window is tall enough. Recommendation: as drawn; it is simplest and consistent at
-   every GUI scale.
+- 2026-09-06: layout as drawn in the wireframe (toolbar y = 28, lists at 52).
+- 2026-09-06: row badge included in both lists.
