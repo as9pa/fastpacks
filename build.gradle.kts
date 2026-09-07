@@ -66,6 +66,8 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
 
     testImplementation("junit:junit:4.13.2")
+    // Same version Minecraft 1.8.9 bundles; makes the cache tests independent of Loom's runtime classpath.
+    testImplementation("com.google.code.gson:gson:2.2.4")
 }
 
 tasks.withType(JavaCompile::class) {
