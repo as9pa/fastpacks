@@ -62,14 +62,14 @@ not by this mod either. Re-zip them so `pack.mcmeta` is at the root.
 
 ## Install
 
-Drop `fastpacks-0.2.0.jar` into `.minecraft/mods` next to Forge 1.8.9. Compatible with OptiFine 1.8.9 HD U M5 as a mod jar and with other Mixin 0.7.11 mods. Uses `@Inject`/`@Redirect`/`@ModifyConstant` only, no `@Overwrite`.
+Download `fastpacks-0.2.0.jar` from the [Releases](https://github.com/as9pa/fastpacks/releases) page and drop it into `.minecraft/mods` next to Forge 1.8.9. Compatible with OptiFine 1.8.9 HD U M5 as a mod jar and with other Mixin 0.7.11 mods. Uses `@Inject`/`@Redirect`/`@ModifyConstant` only, no `@Overwrite`.
 The mixin config is marked required, so if a future OptiFine or Forge build changes one of the patched vanilla methods the game will fail at launch with a clear Mixin error naming fastpacks rather than silently running slow; remove the jar to launch again.
 
 ## Build
 
-Needs JDK 21 (to run Gradle) and JDK 8 (toolchain, auto-detected). On Windows:
+Needs JDK 21 (to run Gradle) and JDK 8 (toolchain, auto-detected). Point `JAVA_HOME` at a JDK 21
+install, then:
 
-    set JAVA_HOME=C:\Program Files\Java\jdk-21.0.12.1
     gradlew build
 
 Output: `build/libs/fastpacks-0.2.0.jar`. Tests: `gradlew test`.

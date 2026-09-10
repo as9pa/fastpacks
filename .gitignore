@@ -5,3 +5,8 @@ build/
 .gradle/
 *.log
 logs/
+.superpowers/
+.claude/
+.worktrees/
+.ruff_cache/
+docs/superpowers/
