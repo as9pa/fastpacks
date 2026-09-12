@@ -7,7 +7,7 @@ time it opens. Vanilla re-matches every pack on disk against its cached list usi
 that makes filesystem calls on each compare, inside O(N^2) list scans, so a few hundred packs
 means hundreds of thousands of filesystem calls per open. Pack size has nothing to do with it.
 fastpacks caches each pack's identity and refreshes it once per scan, so the work drops to 2N
-filesystem calls. In my own testing a 20 second freeze became well under a quarter of a second.
+filesystem calls. In my own testing a 21 second freeze became 0.14 s.
 
 ## What it does
 
@@ -20,16 +20,29 @@ filesystem calls. In my own testing a 20 second freeze became well under a quart
 
 ## Speedup
 
-From my own testing with a few hundred packs installed:
+From my own testing with a few hundred packs installed. Scan times come from the
+`fastpacks: rescanned N packs in M ms` log line; the vanilla rows ran with the optimisations
+switched off.
 
-| Metric | Speedup |
-|---|---|
-| Startup scan | ~3.5x to 7x |
-| Screen open scan | ~80x to 155x |
-| Avg frame on the packs screen | ~17x |
+Dev client, no OptiFine:
 
-The remaining startup time is vanilla work this mod does not touch: reading the directory and
-opening every zip for its `pack.mcmeta`.
+| Metric | Vanilla | fastpacks | Ratio |
+|---|---|---|---|
+| Startup scan | 1977 ms | 275 ms | 7.2x |
+| Screen open scan | 7644 ms | 94 ms | 81x |
+| Avg frame on the packs screen | 10.70 ms | 0.61 ms | 17.5x |
+
+Real game with OptiFine loaded and more packs:
+
+| Metric | Vanilla | fastpacks | Ratio |
+|---|---|---|---|
+| Startup scan | 1466 ms | 413 ms | 3.5x |
+| Screen open scan | 21212 ms | 137 ms | 155x |
+
+A 21 second freeze becomes 0.14 s. Avg frame is render time between Forge's render-tick start and
+end events, so it excludes the frame-rate-cap wait and is not an FPS figure. The remaining startup
+time is vanilla work this mod does not touch: reading the directory and opening every zip for its
+`pack.mcmeta`.
 
 ## Install
 
