@@ -1,12 +1,38 @@
-.idea/
-.vscode/
-run/
+# Build outputs
 build/
+out/
+bin/
 .gradle/
-*.log
-logs/
-.superpowers/
+.kotlin/
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# Dev client working dir (downloaded assets, worlds, packs, logs)
+run/
+
+# IDE and editor
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+*.swp
+
+# AI tooling and local notes
 .claude/
+.superpowers/
 .worktrees/
 .ruff_cache/
 docs/superpowers/
+
+# Logs and crash dumps
+*.log
+logs/
+crash-reports/
+hs_err_pid*
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
