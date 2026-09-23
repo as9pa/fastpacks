@@ -64,3 +64,7 @@ Output: `build/libs/fastpacks-0.2.0.jar`. Tests: `gradlew test`.
 
 Dev switches for `gradlew runDevClient`: `-Pfastpacks.baseline=true` (optimisations off, timing on),
 `-Pfastpacks.devOpenPacksGui=true` (auto-open the screen, log frame time, exit).
+
+## License
+
+MIT. See [LICENSE](LICENSE).
