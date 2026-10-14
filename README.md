@@ -1,69 +1,31 @@
 # fastpacks
 
-resource pack load-time optimizer for forge 1.8.9 client mod.
+Resource pack load-time optimizer for Forge 1.8.9. With a few hundred packs installed, the Resource Packs screen opened in 21 s before and opens in 0.14 s now.
 
-With hundreds of packs installed, the vanilla Resource Packs screen freezes for seconds every
-time it opens. Vanilla re-matches every pack on disk against its cached list using a comparison
-that makes filesystem calls on each compare, inside O(N^2) list scans, so a few hundred packs
-means hundreds of thousands of filesystem calls per open. Pack size has nothing to do with it.
-fastpacks caches each pack's identity and refreshes it once per scan, so the work drops to 2N
-filesystem calls. In my own testing a 21 second freeze became 0.14 s.
+**[Download](https://github.com/as9pa/fastpacks/releases/latest)** (Forge 1.8.9)
 
 ## What it does
 
-- Caches pack identity strings so a rescan costs 2N filesystem calls instead of ~6N^2. Behaviour is otherwise identical to vanilla.
-- Decodes pack icons on background threads, showing the default icon until each real one arrives. Icons larger than 128 px are downscaled before upload.
-- Skips drawing rows that are scrolled out of view in both pack lists. Works with or without OptiFine.
-- Adds a toolbar above the lists: a search box, resolution chips (All / 16x / 32x / 64x / 128x+ / Overlay) and a match counter. Only the Available list is filtered; selected packs never disappear.
-- Shows each pack's resolution at the right end of its row, read from the PNG headers of a dozen common PvP textures once per pack and cached in `config/fastpacks/packs.json`. "Overlay" means the pack has none of those textures. Delete the cache file to rescan.
-- Logs `fastpacks: rescanned N packs in M ms` to `latest.log`.
+- **Fast rescans:** caches each pack's identity, so a scan costs 2N filesystem calls instead of ~6N^2.
+- **Icons off the main thread:** decoded in the background, icons over 128 px are downscaled.
+- **Culled rows:** rows scrolled out of view are not drawn, with or without OptiFine.
+- **Search and chips:** a search box and All / 16x / 32x / 64x / 128x+ / Overlay filters above the Available list.
+- **Resolution labels:** each pack shows its resolution at the right end of its row.
+- **Safe:** vanilla behaviour is otherwise unchanged, and selected packs never disappear.
 
-## Speedup
-
-From my own testing with a few hundred packs installed. Scan times come from the
-`fastpacks: rescanned N packs in M ms` log line; the vanilla rows ran with the optimisations
-switched off.
-
-Dev client, no OptiFine:
-
-| Metric | Vanilla | fastpacks | Ratio |
-|---|---|---|---|
-| Startup scan | 1977 ms | 275 ms | 7.2x |
-| Screen open scan | 7644 ms | 94 ms | 81x |
-| Avg frame on the packs screen | 10.70 ms | 0.61 ms | 17.5x |
-
-Real game with OptiFine loaded and more packs:
-
-| Metric | Vanilla | fastpacks | Ratio |
-|---|---|---|---|
-| Startup scan | 1466 ms | 413 ms | 3.5x |
-| Screen open scan | 21212 ms | 137 ms | 155x |
-
-A 21 second freeze becomes 0.14 s. Avg frame is render time between Forge's render-tick start and
-end events, so it excludes the frame-rate-cap wait and is not an FPS figure. The remaining startup
-time is vanilla work this mod does not touch: reading the directory and opening every zip for its
-`pack.mcmeta`.
+Benchmarks and how it works are in [docs/details.md](docs/details.md).
 
 ## Install
 
-Download `fastpacks-0.2.0.jar` from the [Releases](https://github.com/as9pa/fastpacks/releases)
-page and drop it into `.minecraft/mods` next to Forge 1.8.9. Compatible with OptiFine 1.8.9 HD U M5
-as a mod jar and with other Mixin 0.7.11 mods. Uses `@Inject`, `@Redirect` and `@ModifyConstant`
-only, no `@Overwrite`. The mixin config is marked required: if a future OptiFine or Forge build
-changes a patched method, the game fails at launch with a Mixin error naming fastpacks instead of
-silently running slow. Remove the jar to launch again.
+Download `fastpacks-0.2.0.jar` from [Releases](https://github.com/as9pa/fastpacks/releases) and drop it into `.minecraft/mods` next to Forge 1.8.9. Works with OptiFine 1.8.9 HD U M5 as a mod jar. Remove the jar to go back to vanilla.
 
 ## Build
 
-Needs JDK 21 (to run Gradle) and JDK 8 (toolchain, auto-detected). Point `JAVA_HOME` at a JDK 21
-install, then:
+Needs JDK 21 (to run Gradle) and JDK 8 (toolchain, auto-detected). Point `JAVA_HOME` at a JDK 21 install, then:
 
     gradlew build
 
 Output: `build/libs/fastpacks-0.2.0.jar`. Tests: `gradlew test`.
-
-Dev switches for `gradlew runDevClient`: `-Pfastpacks.baseline=true` (optimisations off, timing on),
-`-Pfastpacks.devOpenPacksGui=true` (auto-open the screen, log frame time, exit).
 
 ## License
 
