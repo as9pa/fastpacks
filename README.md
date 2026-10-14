@@ -1,6 +1,6 @@
 # fastpacks
 
-Resource pack load-time optimizer for Forge 1.8.9. With a few hundred packs installed, the Resource Packs screen opened in 21 s before and opens in 0.14 s now.
+**The Resource Packs screen opens 155x faster.** With a few hundred packs installed, Forge 1.8.9 froze for 21 s every time it opened; with fastpacks it opens in 0.14 s.
 
 **[Download](https://github.com/as9pa/fastpacks/releases/latest)** (Forge 1.8.9)
 
@@ -13,7 +13,14 @@ Resource pack load-time optimizer for Forge 1.8.9. With a few hundred packs inst
 - **Resolution labels:** each pack shows its resolution at the right end of its row.
 - **Safe:** vanilla behaviour is otherwise unchanged, and selected packs never disappear.
 
-Benchmarks and how it works are in [docs/details.md](docs/details.md).
+Measured in the real game with OptiFine and a few hundred packs:
+
+| | Vanilla | fastpacks | Faster |
+|---|---|---|---|
+| Opening the Resource Packs screen | 21.2 s | 0.14 s | 155x |
+| Startup scan | 1.47 s | 0.41 s | 3.5x |
+
+More benchmarks and how it works are in [docs/details.md](docs/details.md).
 
 ## Install
 
