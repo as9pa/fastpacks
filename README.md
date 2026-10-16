@@ -24,7 +24,7 @@ More benchmarks and how it works are in [docs/details.md](docs/details.md).
 
 ## Install
 
-Download `fastpacks-0.2.0.jar` from [Releases](https://github.com/as9pa/fastpacks/releases) and drop it into `.minecraft/mods` next to Forge 1.8.9. Works with OptiFine 1.8.9 HD U M5 as a mod jar. Remove the jar to go back to vanilla.
+Download `fastpacks-0.3.0.jar` from [Releases](https://github.com/as9pa/fastpacks/releases) and drop it into `.minecraft/mods` next to Forge 1.8.9. Works with OptiFine 1.8.9 HD U M5 as a mod jar. Remove the jar to go back to vanilla.
 
 ## Build
 
@@ -32,7 +32,7 @@ Needs JDK 21 (to run Gradle) and JDK 8 (toolchain, auto-detected). Point `JAVA_H
 
     gradlew build
 
-Output: `build/libs/fastpacks-0.2.0.jar`. Tests: `gradlew test`.
+Output: `build/libs/fastpacks-0.3.0.jar`. Tests: `gradlew test`.
 
 ## License
 
