@@ -9,9 +9,9 @@
 - **Fast rescans:** caches each pack's identity, so a scan costs 2N filesystem calls instead of ~6N^2.
 - **Icons off the main thread:** decoded in the background, icons over 128 px are downscaled.
 - **Culled rows:** rows scrolled out of view are not drawn, with or without OptiFine.
-- **Search and chips:** a search box and All / 16x / 32x / 64x / 128x+ / Overlay filters above the Available list.
-- **Resolution labels:** each pack shows its resolution at the right end of its row.
 - **Safe:** vanilla behaviour is otherwise unchanged, and selected packs never disappear.
+
+Search, filter chips and resolution labels now live in the separate [packorganizer](https://github.com/as9pa/packorganizer) mod.
 
 Measured in the real game with OptiFine and a few hundred packs:
 

@@ -8,10 +8,7 @@
   "client": [
     "MixinResourcePackRepositoryEntry",
     "MixinResourcePackRepository",
-    "MixinGuiListExtended",
-    "MixinGuiResourcePackList",
-    "MixinGuiScreenResourcePacks",
-    "MixinResourcePackListEntry"
+    "MixinGuiListExtended"
   ],
   "injectors": { "defaultRequire": 1 }
 }

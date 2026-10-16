@@ -14,8 +14,6 @@ filesystem calls. In my own testing a 21 second freeze became 0.14 s.
 - Caches pack identity strings so a rescan costs 2N filesystem calls instead of ~6N^2. Behaviour is otherwise identical to vanilla.
 - Decodes pack icons on background threads, showing the default icon until each real one arrives. Icons larger than 128 px are downscaled before upload.
 - Skips drawing rows that are scrolled out of view in both pack lists. Works with or without OptiFine.
-- Adds a toolbar above the lists: a search box, resolution chips (All / 16x / 32x / 64x / 128x+ / Overlay) and a match counter. Only the Available list is filtered; selected packs never disappear.
-- Shows each pack's resolution at the right end of its row, read from the PNG headers of a dozen common PvP textures once per pack and cached in `config/fastpacks/packs.json`. "Overlay" means the pack has none of those textures. Delete the cache file to rescan.
 - Logs `fastpacks: rescanned N packs in M ms` to `latest.log`.
 
 ## Speedup
