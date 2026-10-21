@@ -11,7 +11,7 @@
 - **Culled rows:** rows scrolled out of view are not drawn, with or without OptiFine.
 - **Safe:** vanilla behaviour is otherwise unchanged, and selected packs never disappear.
 
-Search, filter chips and resolution labels now live in the separate [packorganizer](https://github.com/as9pa/packorganizer) mod.
+Search, filter chips and resolution labels now live in the separate [packview](https://github.com/as9pa/packview) mod (formerly packorganizer).
 
 Measured in the real game with OptiFine and a few hundred packs:
 
